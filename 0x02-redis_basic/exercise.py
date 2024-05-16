@@ -6,18 +6,42 @@ import functools
 
 def count_calls(method: Callable) -> Callable:
     """
-    Decorator function to count the number of times a method is called.
+    function to count the number of times a method is called.
     """
 
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         """
-        Wrapper function that increments the call count in Redis and calls the original method.
+        function that increments the call count in Redis and calls the original method.
         """
         self._redis.incr(method.__qualname__)
         return method(self, *args, **kwargs)
 
     return wrapper
+
+
+def call_history(method):
+    """
+    store the history of inputs and outputs for a function in Redis.
+    """
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """
+        function to execute the method and store its inputs and outputs in Redis.
+        """
+        inputs_key = f"{method.__qualname__}:inputs"
+        outputs_key = f"{method.__qualname__}:outputs"
+
+        self._redis.rpush(inputs_key, str(args))
+
+        result = method(self, *args, **kwargs)
+
+        self._redis.rpush(outputs_key, result)
+
+        return result
+
+    return wrapper
+
 
 class Cache:
     """
