@@ -3,8 +3,6 @@ import redis
 import uuid
 from typing import Union, Callable, Optional
 import functools
-''' Writing strings to Redis. '''
-
 
 def count_calls(method: Callable) -> Callable:
     """
@@ -21,7 +19,6 @@ def count_calls(method: Callable) -> Callable:
 
     return wrapper
 
-
 class Cache:
     """
     A class to represent a caching system using Redis.
@@ -35,15 +32,6 @@ class Cache:
         """
         self._redis = redis.Redis()
         self._redis.flushdb()
-
-    def store(self, data: Union[str, bytes, int, float]) -> str:
-        """
-        Stores the provided data in Redis with a randomly generated key.
-        """
-        key = str(uuid.uuid4())
-        self._redis.set(key, data)
-        return key
-
 
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
