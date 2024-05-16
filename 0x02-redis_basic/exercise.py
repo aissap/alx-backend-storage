@@ -6,6 +6,22 @@ import functools
 ''' Writing strings to Redis. '''
 
 
+def count_calls(method: Callable) -> Callable:
+    """
+    Decorator function to count the number of times a method is called.
+    """
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """
+        Wrapper function that increments the call count in Redis and calls the original method.
+        """
+        self._redis.incr(method.__qualname__)
+        return method(self, *args, **kwargs)
+
+    return wrapper
+
+
 class Cache:
     """
     A class to represent a caching system using Redis.
@@ -28,20 +44,6 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def count_calls(method: Callable) -> Callable:
-        """
-        Decorator function to count the number of times a method is called.
-        """
-
-        @functools.wraps(method)
-        def wrapper(self, *args, **kwargs):
-            """
-            Wrapper function that increments the call count in Redis and calls the original method.
-            """
-            self._redis.incr(method.__qualname__)
-            return method(self, *args, **kwargs)
-
-        return wrapper
 
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
