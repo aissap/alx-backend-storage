@@ -14,22 +14,20 @@ def track_and_cache(expiry: int) -> Callable:
     """
     Track URL access counts and cache the result with an expiry time.
     """
-    def decorator(func: Callable) -> Callable:
-        @wraps(func)
-        def wrapper(url: str) -> str:
-            count_key = f"count:{url}"
-            redis_client.incr(count_key)
+    @wraps(func)
+    def wrapper(url: str) -> str:
+        count_key = f"count:{url}"
+        redis_client.incr(count_key)
 
-            cache_key = f"cache:{url}"
-            cached_result = redis_client.get(cache_key)
-            if cached_result:
-                return cached_result.decode('utf-8')
+        cache_key = f"cache:{url}"
+        cached_result = redis_client.get(cache_key)
+        if cached_result:
+            return cached_result.decode('utf-8')
 
-            result = func(url)
-            redis_client.setex(cache_key, expiry, result)
-            return result
-        return wrapper
-    return decorator
+        result = func(url)
+        redis_client.setex(cache_key, 10, result)
+        return result
+    return wrapper
 
 
 @track_and_cache(10)
