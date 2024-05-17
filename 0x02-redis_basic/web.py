@@ -10,7 +10,7 @@ Implementing an expiring web cache and tracker.
 redis_client = redis.Redis()
 
 
-def track_and_cache(expiry: int) -> Callable:
+def track_and_cache(func: Callable) -> Callable:
     """
     Track URL access counts and cache the result with an expiry time.
     """
@@ -30,7 +30,7 @@ def track_and_cache(expiry: int) -> Callable:
     return wrapper
 
 
-@track_and_cache(10)
+@track_and_cache
 def get_page(url: str) -> str:
     """
     Fetches content of a URL, caches it for 10 sec, tracks the access counts.
