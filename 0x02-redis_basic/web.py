@@ -39,3 +39,11 @@ def get_page(url: str) -> str:
     """
     response = requests.get(url)
     return response.text
+
+def get_access_count(url: str) -> int:
+    """
+    Retrieves the access count of a given URL.
+    """
+    count_key = f"count:{url}"
+    count = redis_client.get(count_key)
+    return int(count) if count else 0
