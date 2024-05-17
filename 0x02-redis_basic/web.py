@@ -27,10 +27,11 @@ def track_and_cache(expiry: int) -> Callable:
         return wrapper
     return decorator
 
+
 @track_and_cache(10)
 def get_page(url: str) -> str:
     """
-    Fetches the HTML content of a URL, caches it for 10 seconds, and tracks the access counts.
+    Fetches content of a URL, caches it for 10 sec, tracks the access counts.
     """
     response = requests.get(url)
     return response.text
